@@ -1,4 +1,6 @@
 import os
+# import time
+
 import numpy as np
 
 import constants
@@ -6,23 +8,27 @@ import utils
 
 
 def load_data():
-    if saved_tuple_exists("training") and saved_tuple_exists("testing"):
+    if saved_tuple_exists("training") and saved_tuple_exists("testing") and constants.persistence:
         local_training_tuple = load_data_tuple("training")
         local_testing_tuple = load_data_tuple("testing")
     else:
         local_training_tuple = load_training_data_from_folder(lambda char: "train_" + char)
-        save_data_tuple(local_training_tuple, "training")
-
         local_testing_tuple = load_training_data_from_folder(lambda char: "hsf_0")
-        save_data_tuple(local_testing_tuple, "testing")
+        if constants.persistence:
+            save_data_tuple(local_training_tuple, "training")
+            save_data_tuple(local_testing_tuple, "testing")
 
     return local_training_tuple, local_testing_tuple
 
 
 def load_training_data_from_folder(folder_func):
-    input_data = np.empty((0, 128, 128), dtype=np.uint8)
-    output_classification = np.empty(0)
+    max_array_size = constants.char_image_count * len(constants.characters)
+
+    input_data = np.empty((max_array_size, 128, 128, 1), dtype=np.uint8)
+    output_classification = np.empty(max_array_size, dtype=np.uint8)
     index = 0
+
+    # tic = time.perf_counter()
 
     for char in constants.characters_folders:
         print(char)
@@ -31,13 +37,26 @@ def load_training_data_from_folder(folder_func):
         folder_contents = os.listdir(folder_path)
 
         for i in range(constants.char_image_count):
-            picture_filename = folder_contents[i]
+            if i >= len(folder_contents):
+                break
 
+            picture_filename = folder_contents[i]
             image_data = utils.load_image_file(folder_path + "/" + picture_filename)
-            input_data = np.insert(input_data, index, image_data, axis=0)
-            output_classification = np.insert(output_classification, index, constants.characters_folders.index(char))
+
+            input_data[index] = image_data
+            output_classification[index] = constants.characters_folders.index(char)
+
+            # if index % 1000 == 0:
+            #     print(index)
+            #     toc = time.perf_counter()
+            #     print(f"{toc - tic:0.4f} seconds")
+            #     tic = toc
 
             index += 1
+
+    if index != max_array_size:
+        input_data = np.delete(input_data, list(range(index, max_array_size)), axis=0)
+        output_classification = np.delete(output_classification, list(range(index, max_array_size)), axis=0)
 
     return input_data, output_classification
 
