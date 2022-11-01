@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 
-import tensorflow as tf
+import data
+import model
 
-import training_data
 
 def main():
-	# numpy.set_printoptions(threshold=sys.maxsize)
+    training, testing = data.load_data()
 
-	print("TensorFlow version:", tf.__version__)
-	training_data.loadTrainingData()
-	
+    m = model.create(training[0], training[1])
+
+    m.evaluate(training[0], training[1], verbose=2)
+    m.evaluate(testing[0], testing[1], verbose=2)
+
+    print(m.summary())
+
+
 if __name__ == '__main__':
-	main()
+    main()
