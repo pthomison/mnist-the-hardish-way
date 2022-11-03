@@ -6,9 +6,6 @@ import utils
 
 
 def main():
-    print(constants.characters)
-    print(constants.characters)
-
     training, testing = data.load_data()
 
     m = model.create(training[0], training[1])

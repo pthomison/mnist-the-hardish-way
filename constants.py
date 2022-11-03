@@ -10,8 +10,8 @@ uppercase = ["A", "B", "C", "D", "E", "F", "G", "H", "I",
              "J", "K", "L", "M", "N", "O", "P", "Q", "R",
              "S", "T", "U", "V", "W", "X", "Y", "Z"]
 
-# characters = numbers + lowercase + uppercase
-characters = numbers
+characters = numbers + lowercase + uppercase
+# characters = numbers
 # characters = lowercase
 # characters = uppercase
 char_image_count = 1000

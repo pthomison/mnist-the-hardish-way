@@ -37,7 +37,19 @@ def create(training_data, training_classifications):
 			# "no longer improving" being further defined as "for at least 2 epochs"
 			patience=2,
 			verbose=1,
+		),
+		tf.keras.callbacks.TensorBoard(
+			log_dir='cache-data/logs',
+			histogram_freq=0,
+			write_graph=True,
+			write_images=False,
+			write_steps_per_second=False,
+			update_freq='epoch',
+			profile_batch=0,
+			embeddings_freq=0,
+			embeddings_metadata=None,
 		)
+
 	]
 
 	model.compile(loss="sparse_categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
