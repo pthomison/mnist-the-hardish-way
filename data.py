@@ -1,5 +1,4 @@
 import os
-# import time
 
 import numpy as np
 
@@ -12,7 +11,7 @@ def load_data():
         local_training_tuple = load_data_tuple("training")
         local_testing_tuple = load_data_tuple("testing")
     else:
-        local_training_tuple = load_training_data_from_folder(lambda char: "train_" + char)
+        local_training_tuple = load_training_data_from_folder(lambda char: "train_" + hex(ord(char))[2:])
         local_testing_tuple = load_training_data_from_folder(lambda char: "hsf_0")
         if constants.persistence:
             save_data_tuple(local_training_tuple, "training")
@@ -28,12 +27,11 @@ def load_training_data_from_folder(folder_func):
     output_classification = np.empty(max_array_size, dtype=np.uint8)
     index = 0
 
-    # tic = time.perf_counter()
-
-    for char in constants.characters_folders:
+    for char in constants.characters:
         print(char)
 
-        folder_path = constants.characters_folders_base_path + "/" + char + "/" + folder_func(char)
+        character_folder = constants.characters_folders[constants.characters.index(char)]
+        folder_path = character_folder + "/" + folder_func(char)
         folder_contents = os.listdir(folder_path)
 
         for i in range(constants.char_image_count):
@@ -44,13 +42,7 @@ def load_training_data_from_folder(folder_func):
             image_data = utils.load_image_file(folder_path + "/" + picture_filename)
 
             input_data[index] = image_data
-            output_classification[index] = constants.characters_folders.index(char)
-
-            # if index % 1000 == 0:
-            #     print(index)
-            #     toc = time.perf_counter()
-            #     print(f"{toc - tic:0.4f} seconds")
-            #     tic = toc
+            output_classification[index] = constants.characters.index(char)
 
             index += 1
 
